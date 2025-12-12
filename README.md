@@ -17,7 +17,9 @@ Abaixo estão as decisões técnicas fundamentais que guiam o desenvolvimento do
 | 010 | **Qualidade** | [Linting & Typing](./docs/adr/010-code-quality-guidelines.md) |
 
 
-micro mvp de arquitetura:
+### micro mvp de arquitetura
+
+[Projeto](https://github.com/rosthancazia/arc-records/tree/main/simonia-mvp) 
 
 1.  **Traefik (Gateway):** Recebe as chamadas e roteia.
 2.  **PostgreSQL (Banco):** O banco de dados do Core.
