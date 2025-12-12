@@ -1,19 +1,20 @@
-# Arquitetura de Soluções e Serviços
+## 🏗️ Decisões de Arquitetura (ADRs)
 
-> base de governança técnica para o projeto mvp **Simonia**.
+Este projeto segue o padrão de **Architecture Decision Records**.
+Abaixo estão as decisões técnicas fundamentais que guiam o desenvolvimento do Simonia:
 
-### Resumo da Lista de ADRs para o Repositório
-
-1.  **Arquitetura:** Microserviços (001)
-2.  **Tech Stack:** Python/FastAPI (002)
-3.  **Dados:** DB por Serviço (003)
-4.  **Comunicação:** Sync/Async (004)
-5.  **Código:** Clean Arch (005)
-6.  **Infra:** Docker/K8s (006)
-7.  **Segurança:** Gateway/Auth (007)
-8.  **Negócio/SaaS:** Multi-tenancy (008)
-9.  **Operação:** Observabilidade (009)
-10. **Qualidade:** Linting/Typing (010)
+| ID | Decisão | Arquivo |
+|:--:|:---|:---|
+| 001 | **Arquitetura** | [Microserviços](./docs/adr/001-microservices-architecture.md) |
+| 002 | **Tech Stack** | [Python & FastAPI](./docs/adr/002-backend-tech-stack.md) |
+| 003 | **Dados** | [Database per Service](./docs/adr/003-database-strategy.md) |
+| 004 | **Comunicação** | [Síncrona vs Assíncrona](./docs/adr/004-communication-strategy.md) |
+| 005 | **Código** | [Clean Architecture](./docs/adr/005-internal-application-structure.md) |
+| 006 | **Infra** | [Docker & Orquestração](./docs/adr/006-containerization-and-orchestration.md) |
+| 007 | **Segurança** | [Auth & API Gateway](./docs/adr/007-authentication-and-gateway.md) |
+| 008 | **SaaS** | [Multi-tenancy Strategy](./docs/adr/008-multi-tenancy-strategy.md) |
+| 009 | **Operação** | [Padrões de Observabilidade](./docs/adr/009-observability-standards.md) |
+| 010 | **Qualidade** | [Linting & Typing](./docs/adr/010-code-quality-guidelines.md) |
 
 
 micro mvp de arquitetura:
