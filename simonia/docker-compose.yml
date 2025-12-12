@@ -1,0 +1,85 @@
+services:
+  # --- API Gateway (Traefik v3) ---
+  reverse-proxy:
+    image: traefik:v3.2
+    container_name: simonia-gateway
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - simonia-net
+
+  # --- Banco de Dados (Postgres) ---
+  db-core:
+    image: postgres:16-alpine
+    container_name: simonia-db-core
+    restart: always
+    environment:
+      POSTGRES_USER: simonia
+      POSTGRES_PASSWORD: simoniapassword
+      POSTGRES_DB: simonia_core
+    volumes:
+      - postgres_core_data:/var/lib/postgresql/data
+    networks:
+      - simonia-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U simonia -d simonia_core"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- Mensageria (RabbitMQ) ---
+  queue:
+    image: rabbitmq:3.13-management-alpine
+    container_name: simonia-queue
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - simonia-net
+    healthcheck:
+      # Ajuste: Formato de lista para garantir execução correta
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # --- Microserviço: CORE ---
+  service-core:
+    build: 
+      context: ./services/core
+    container_name: simonia-service-core
+    restart: always
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --root-path /api/v1/core
+    volumes:
+      - ./services/core:/app
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://simonia:simoniapassword@db-core/simonia_core
+      - RABBITMQ_URL=amqp://guest:guest@queue:5672/
+    depends_on:
+      db-core:
+        condition: service_healthy
+      queue:
+        condition: service_healthy # Agora vai encontrar o healthcheck acima
+    networks:
+      - simonia-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.core.rule=PathPrefix(`/api/v1/core`)"
+      - "traefik.http.routers.core.entrypoints=web"
+      - "traefik.http.services.core.loadbalancer.server.port=8000"
+
+volumes:
+  postgres_core_data:
+
+networks:
+  simonia-net:
+    driver: bridge
